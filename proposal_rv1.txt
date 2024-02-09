@@ -1,0 +1,78 @@
+Project Title: GameSphere
+
+Proposal
+
+1. Project Goal
+
+GameSphere will serve as a comprehensive web application aimed at empowering video game enthusiasts to discover new titles, organize their playlists, and connect with a community of like-minded individuals.  The website will utilize the IGBD API to deliver detailed game information, personalized recommendations, and user-driven ratings.
+
+2. Target Users
+
+The primary target audience for GameSphere will be passionate video game players.  Specific demographics include:
+
+Casual Gamers: Individuals who enjoy video games for recreation and entertainment.
+Hardcore Gamers: Enthusiastic players seeking in-depth game information and community interaction.
+Collectors: Users interested in building virtual libraries of their favorite games and retro titles.
+
+3. API and Data Utilization
+
+GameSphere will rely heavily on the IGBD API (https://api-docs.igdb.com/).  Primary data elements extracted from the API will include:
+
+Game Metadata: Titles, release dates, developers, publishers, cover art.
+Genres & Themes: Categorizing games for filtering and discovery.
+Platforms: Available consoles and PC.
+Ratings: Community-generated and aggregated scores.
+User Reviews: Written reviews and feedback.
+
+4. Project Development Framework
+
+a.  Database Schema
+
+A simple yet efficient relational database model is proposed:
+
+User Table: username, email, hashed password, profile picture (optional).
+Game Table (Linked to IGBD data): game ID, title, cover image, genres, platforms.
+Ratings Table: user ID, game ID, rating (1-10 scale).
+Lists Table: user ID, list name (e.g., Favorites, Played, To-Play).
+List Entries Table: list ID, game ID.
+
+b.  Potential API Issues and Solutions
+
+Data Inconsistency: Regularly synchronize select portions of the database with the IGBD API to reflect game updates.
+Data Accuracy: This is a community maintined database. May need to allow for community moderation (e.g. Wikipedia)
+
+c.  Securing Sensitive Data
+
+Strong password hashing and proper salting will protect user credentials.
+User data handling will adhere to industry-standard privacy practices.
+
+d.  Core Functionality
+
+Game Search & Filtering: Powerful search based on title, genre, platform, etc.
+Comprehensive Game Details: Information-rich game pages pulled from the IGBD API.
+User Accounts: The ability to register and log in.
+Rating System: Allow users to rate games.
+Custom Lists: Capability to create personalized lists (Want to Play, Favorites, etc.).
+Recommendations: Engine driven by user favorites and ratings.
+
+e.  User Flow
+
+Landing Page: Featured games, search bar, genre navigation.
+Game Detail Page: Description, screenshots (API), release info, average rating, reviews.
+User Profile: Edit profile, view rating history, manage lists.
+Search/Filter: Results with title, cover, release date, platform.
+Lists: Viewing, editing, adding games.
+
+f.  Beyond CRUD and Stretch Goals
+
+Social Features: Discussion forums or a basic message system for players to connect.
+Game News Integration: Pull relevant news articles from a gaming news API.
+Personalized Dashboard: Highlight trending games based on user preferences.
+Game discovery quizzes: A quiz to determine user prefs and reccomend games. 
+Integration with streaming platforms: Display links to Twitch or other live stream platforms for specific game. 
+
+Extra Improvement  Ideas
+
+Machine learning-based recommendations: Enhanced recommendations based on gameplay patterns and preferences.
+Achievements or Badges: Introduce gamification elements.
+
