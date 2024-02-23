@@ -1,0 +1,2 @@
+TWITCH_CLIENT_ID="34g3gfz0smemtutprdhibuhj1ahrbi"
+TWITCH_CLIENT_SECRET="fjsaaf67x3m5h65je6fb6chg8jty46"

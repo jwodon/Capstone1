@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>GameSphere</title>
+
+        <link rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="/static/css/style.css" />
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">GameSphere</a>
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarNavAltMarkup"
+                    aria-controls="navbarNavAltMarkup"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav">
+                        <a class="nav-link active" aria-current="page" href="/">Home</a>
+                        <a class="nav-link" href="#">TBD</a>
+                    </div>
+                </div>
+                <ul class="navbar-nav ml-auto d-flex flex-row">
+                    {% if not g.user %}
+                    <li class="nav-item"><a class="nav-link" href="/signup">Sign up</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/login">Log in</a></li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/users/profile/{{ user.id }}">Hello {{g.user.username}}!</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="/logout">Log out</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message
+            in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %} {% endif %} {% endwith %}
+        </div>
+
+        <div class="container">{% block content %}{% endblock %}</div>
+
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://unpkg.com/popper.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://unpkg.com/axios/dist/axios.js"></script>
+        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    </body>
+</html>

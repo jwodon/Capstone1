@@ -1,0 +1,66 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <img
+                src="{{ game.cover.url | default('/static/images/alt_cover_img.jpg') }}"
+                alt="Game Cover"
+                class="img-fluid" />
+        </div>
+        <div class="col-md-8">
+            <h1>{{ game.name }}</h1>
+            <p><strong>Summary:</strong> {{ game.summary }}</p>
+            <p>
+                <strong>Genres:</strong>
+                {% for genre in game.genres %} {{ genre.name }}{% if not loop.last %}, {% endif %} {% endfor %}
+            </p>
+            <p>
+                <strong>Platforms:</strong>
+                {% for platform in game.platforms %} {{ platform.name }}{% if not loop.last %}, {% endif %} {% endfor %}
+            </p>
+
+            {% if game.storyline %}
+            <p><strong>Storyline:</strong> {{ game.storyline }}</p>
+            {% endif %} {% if g.user %}
+            <form method="POST" action="/games/{{ game.id }}/rate">
+                <fieldset class="form-group">
+                    <legend class="col-form-label">Rate this game:</legend>
+                    <input
+                        type="range"
+                        class="form-range"
+                        min="1"
+                        max="5"
+                        step="1"
+                        id="ratingSlider"
+                        name="rating"
+                        required />
+                    <div class="d-flex justify-content-between">
+                        <span>1</span>
+                        <span>2</span>
+                        <span>3</span>
+                        <span>4</span>
+                        <span>5</span>
+                    </div>
+                </fieldset>
+                <div class="d-flex justify-content-center align-content-center">
+                    <button type="submit" class="btn btn-primary">Submit Rating</button>
+                </div>
+            </form>
+            {% endif %} {% if existing_rating %}
+            <p class="text-center"><strong>Your Current Rating:</strong> {{existing_rating.rating}}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<h2>Screenshots</h2>
+<div class="row">
+    {% for screenshot in game.screenshots %}
+    <div class="col-md-4">
+        <img src="{{ screenshot.url }}" alt="Game Screenshot" class="img-fluid mb-3" />
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
