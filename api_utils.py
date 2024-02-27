@@ -25,14 +25,11 @@ def get_game_info(limit=20, offset=0):
     endpoint = "https://api.igdb.com/v4/games"
     data = f"fields name,summary,cover.url,genres.name,platforms.name,aggregated_rating,aggregated_rating_count,hypes; sort hypes desc; where hypes != 0; limit {limit}; offset {offset};"
 
-    print("Data payload:", data)  # Print the data payload for debugging purposes
-
     response = requests.post(endpoint, headers=headers, data=data)  
     response_data = response.json()
 
     games_info = []
     for game in response_data:
-            print("Game object:", game)  # Log the entire game object
             game_info = {
                 "id": game.get("id"),
                 "name": game.get("name"),
@@ -94,7 +91,7 @@ def get_single_game_info(game_id):
     }
 
     endpoint = f"https://api.igdb.com/v4/games/{game_id}"
-    fields = "name,summary,cover.url,genres.name,platforms.name, screenshots.url"  # Specify the fields you need
+    fields = "name,summary,cover.url,genres.name,platforms.name, screenshots.url, aggregated_rating,aggregated_rating_count"  # Specify the fields you need
     params = {
         "fields": fields,
     }
@@ -108,5 +105,20 @@ def get_single_game_info(game_id):
     else:
         return game_info
 
+
+def search_games(query):
+    token = get_twitch_access_token()
+    headers = {
+        "Client-ID": client_id,
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/json"
+    }
+    endpoint = "https://api.igdb.com/v4/search"
+    data = {
+        "fields": "alternative_name,character,checksum,collection,company,description,game,name,platform,published_at,test_dummy,theme",
+        "query": query
+    }
+    response = requests.post(endpoint, headers=headers, json=data)
+    return response.json()
 
 

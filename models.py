@@ -26,6 +26,9 @@ class User(db.Model):
 
     ratings = db.relationship('Rating', backref='users')
 
+    lists = db.relationship('List', backref='users')
+
+
 
     @classmethod
     def signup(cls, username, password, profile_image_url):
@@ -77,7 +80,7 @@ class Rating(db.Model):
 
     rating = db.Column(db.Integer, nullable=False)
 
-class ListsTable(db.Model):
+class List(db.Model):
     """Lists of games by user"""
 
     __tablename__ = 'lists'
@@ -86,20 +89,9 @@ class ListsTable(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete="cascade"), nullable=False)
 
-    list_name = db.Column(db.String(80), nullable=False)
-
-
-
-class ListEntriesTable(db.Model):
-    """Connection of a Game <-> List"""
-
-    __tablename__ = 'list_games'
-
-    id = db.Column(db.Integer, primary_key=True,)
+    title = db.Column(db.String(80), nullable=False)
     
-    list_id = db.Column(db.Integer, db.ForeignKey('lists.id', ondelete="cascade"), nullable=False)
-
-    game_id = db.Column(db.Integer, nullable=False)
+    games = db.Column(db.JSON, nullable=False)  # Store game data as JSON
 
     
 class Review(db.Model):

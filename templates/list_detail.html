@@ -1,23 +1,6 @@
 {% extends 'base.html' %} {% block content %}
 
-<h1 class="text-center">Most Hyped Games</h1>
-
-
-<!-- Will implement in future update
-<div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <select id="platform" class="form-select mb-3">
-                <option value="">Select Platform</option>
-            </select>
-        </div>
-        <div class="col-md-6">
-            <select id="genre" class="form-select mb-3">
-                <option value="">Select Genre</option>
-            </select>
-        </div>
-    </div>
-</div> -->
+<h1 class="text-center">List: {{list.title}}</h1>
 
 <div class="container">
     <div class="row">
@@ -33,11 +16,12 @@
                 </div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
-                        <b>Genre:</b> {% for genre in game.genres %} {{genre}} {{ ',' if not loop.last}} {% endfor %}
+                        <b>Genre:</b> {% for genre in game.genres %} {{genre.name}} {{ ',' if not loop.last}} {% endfor
+                        %}
                     </li>
                     <li class="list-group-item">
-                        <b>Platform:</b>{% for platform in game.platforms %} {{platform}} {{ ', ' if not loop.last}} {%
-                        endfor %}
+                        <b>Platform:</b>{% for platform in game.platforms %} {{platform.name}} {{ ', ' if not
+                        loop.last}} {% endfor %}
                     </li>
                     <li class="list-group-item">
                         {% if game.aggregated_rating %}
@@ -61,13 +45,4 @@
     </div>
 </div>
 
-<nav aria-label="Page navigation example">
-    <ul class="pagination pagination-lg justify-content-center">
-        {% if page > 1 %}
-        <li class="page-item"><a class="page-link" href="/?page={{ page - 1 }}">Previous</a></li>
-        {% endif %} {% if games|length == 20 %}
-        <li class="page-item"><a class="page-link" href="/?page={{ page + 1 }}">Next</a></li>
-        {% endif %}
-    </ul>
-</nav>
 {% endblock %}

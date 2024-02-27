@@ -26,7 +26,7 @@
             <h3>My Game Lists</h3>
             <ul class="list-group">
                 {% if user.lists %} {% for game_list in user.lists %}
-                <li class="list-group-item"><a href="XXXXX/{{ game_list.id }}">{{ game_list.list_name }}</a></li>
+                <li class="list-group-item"><a href="/list/{{ game_list.id }}">{{ game_list.title }}</a></li>
                 {% endfor %} {% else %}
                 <li class="list-group-item">You haven't created any lists yet.</li>
                 {% endif %}

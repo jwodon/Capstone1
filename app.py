@@ -1,12 +1,14 @@
 import os
+import urllib.parse
 
 from flask import Flask, render_template, request, flash, redirect, session, g, jsonify, url_for
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from api_utils import get_game_info, get_genres_info, get_platforms_info, get_single_game_info
+from sqlalchemy import func
 
-from models import db, connect_db, User, Rating, Review
-from forms import UserAddForm, LoginForm, GameSearchForm
+from models import db, connect_db, User, Rating, List
+from forms import UserAddForm, LoginForm, GameSearchForm, CreateListForm
 
 
 CURR_USER_KEY = "curr_user"
@@ -131,7 +133,12 @@ def display_games(page_num=1):
     games = get_game_info(limit=20, offset=offset)
     user = g.user if g.user else None
 
-    return render_template('index.html', games=games, page=page_num, user=user, form=form)
+    # Calculate average ratings
+    avg_ratings = db.session.query(Rating.game_id, func.avg(Rating.rating).label('avg_rating')).group_by(Rating.game_id).all()
+
+ 
+
+    return render_template('index.html', games=games, page=page_num, user=user, form=form, avg_ratings=avg_ratings)
  
 
 @app.route('/users/profile/<int:user_id>')
@@ -174,8 +181,64 @@ def rate_game(game_id):
     db.session.commit()
     return redirect(url_for('show_game_details', game_id=game_id, existing_rating=existing_rating))
 
+##########################################################################################
+#Lists
+
+@app.route('/new_list', methods=["GET", "POST"])
+def create_list():
+    """Show form if GET. User create list form"""
+
+    print("Reached create_list route")  # Temporary print statement to verify route is reached
+
+    if not g.user:
+        flash("You must be logged in to create a list.", 'danger')
+        return redirect("/")
+
+    form = CreateListForm()
+
+    all_games = get_game_info(limit=500)  
+    game_choices = [(game['id'], game['name']) for game in all_games]
+
+    # Update the form field's choices
+    form.game_select.choices = game_choices 
+
+    if form.validate_on_submit():
+        print("Form validated successfully")  # Check if form validation is successful
+        print("Form data:", form.data)  # Print form data to check if it's being captured correctly
+        print("Name:", form.name.data)  # Print specific form field values
+        games = request.form.getlist('game_select')  # Extract selected game IDs
+        print("Games:", games)
+        
+        if games:
+            name = form.name.data
+            user_id = g.user.id
+            new_list = List(user_id=user_id, title=name, games=games)
+            db.session.add(new_list)
+            db.session.commit()
+
+            flash("List created successfully.", 'success')
+            return redirect(f"/users/profile/{g.user.id}")
+        else:
+            flash("No games selected for the list.", 'danger')
+            return redirect("/new_list")  # Redirect back to the form page if no games selected
+
+    return render_template('new_list.html', form=form, user=g.user)
 
 
+@app.route('/list/<int:list_id>')
+def display_list(list_id):
+    """Detailed view of a users list"""
+
+    list = List.query.get(list_id)
+    user = g.user if g.user else None
+
+    # Calculate average ratings
+    avg_ratings = db.session.query(Rating.game_id, func.avg(Rating.rating).label('avg_rating')).group_by(Rating.game_id).all()
+    game_data = [get_single_game_info(game_id) for game_id in list.games]
+
+ 
+
+    return render_template('list_detail.html', user=user, list=list, avg_ratings=avg_ratings, games=game_data)
 
 ##########################################################################################
 #API endpoints
@@ -207,6 +270,18 @@ def get_games():
     games_info = get_game_info(filters=filters)  
 
     return jsonify(games_info)
+
+@app.route('/api/search-games')
+def search_games():
+    query = request.args.get('query', '')  
+    search_results = search_games(query)   
+    return jsonify(search_results)
+
+@app.route('/api/games/all')
+def get_all_games():
+    games_info = get_game_info(limit=500)  # Fetch enough games for the dropdown
+    games_list = [{'id': game['id'], 'name': game['name']} for game in games_info]
+    return jsonify(games_list)
 
 
 ##########################################################################

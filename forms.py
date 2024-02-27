@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SelectField
+from wtforms import StringField, PasswordField, SelectField, SelectMultipleField
 from wtforms.validators import DataRequired, Email, Length
 
 
@@ -19,5 +19,9 @@ class LoginForm(FlaskForm):
 
 class GameSearchForm(FlaskForm):
     name = StringField("Game Name")
-    platform = SelectField("Platform", choices=[]) # We'll populate this later
+    platform = SelectField("Platform", choices=[]) 
     genre = SelectField("Genre", choices=[])   
+
+class CreateListForm(FlaskForm):
+    name = StringField("List Name", validators=[DataRequired()])
+    game_select = SelectMultipleField("Game List", choices=[]) 

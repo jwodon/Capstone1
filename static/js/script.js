@@ -2,11 +2,7 @@ $(document).ready(function () {
     // 1. Fetch platforms and genres
     fetchPlatforms();
     fetchGenres();
-
-    // 3. Fetch games when filters change
-    // $('#platform, #genre').on('change', function () {
-    //     fetchGames();
-    // });
+    fetchAndPopulateGames();
 
     const ratingSlider = $('#ratingSlider');
     const ratingDisplay = $('#ratingDisplay'); // Add an element for display (see HTML snippet below)
@@ -36,4 +32,25 @@ $(document).ready(function () {
                 });
             });
     }
+
+    // Function to fetch and populate the games dropdown
+    // function fetchAndPopulateGames() {
+    //     $('#game-select').prop('disabled', true).append(`<option value="" disabled selected>Loading games...</option>`);
+
+    //     fetch('/api/games/all')
+    //         .then((response) => response.json())
+    //         .then((games) => {
+    //             // Clear placeholder option
+    //             $('#game-select option[value=""][disabled]').remove();
+
+    //             // Populate the dropdown with game options
+    //             games.forEach((game) => {
+    //                 $('#game-select').append(`<option value="${game.id}">${game.name}</option>`);
+    //             });
+    //         })
+    //         .finally(() => {
+    //             // Re-enable the dropdown after loading completes
+    //             $('#game-select').prop('disabled', false);
+    //         });
+    // }
 });

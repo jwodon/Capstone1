@@ -1,0 +1,19 @@
+{% extends 'base.html' %} {% block content %}
+
+<h1 class="text-center">Create Game List</h1>
+
+<form method="POST" action="/new_list" id="list_form">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        <label for="list_name">List Name:</label>
+        {{ form.name(class="form-control", placeholder="Enter list name", required="required") }}
+    </div>
+    <div class="form-group">
+        <label for="game-select">Select Games:</label>
+        {{ form.game_select(class="form-control", id="game-select") }}
+    </div>
+    <input type="hidden" name="form_data" id="game_select_hidden" />
+    <button type="submit" id="submitBtn" class="btn btn-primary btn-block btn-lg">Create List</button>
+</form>
+
+{% endblock %}
