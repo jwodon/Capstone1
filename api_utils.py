@@ -16,32 +16,43 @@ def get_twitch_access_token():
     token = resp.json()['access_token']
     return token
 
-def get_game_info(limit=20, offset=0):
+
+def get_game_info(limit=20, offset=0, platform_id=None, genre_id=None, filters=None):
     token = get_twitch_access_token()
     headers = {
-        "Client-ID": client_id,  
-        "Authorization": f"Bearer {token}" 
+        "Client-ID": client_id,
+        "Authorization": f"Bearer {token}"
     }
     endpoint = "https://api.igdb.com/v4/games"
-    data = f"fields name,summary,cover.url,genres.name,platforms.name,aggregated_rating,aggregated_rating_count,hypes; sort hypes desc; where hypes != 0; limit {limit}; offset {offset};"
 
-    response = requests.post(endpoint, headers=headers, data=data)  
+    base_data = "fields name,summary,cover.url,genres.name,platforms.name,aggregated_rating,aggregated_rating_count,hypes; sort hypes desc;"
+
+
+    if filters:
+        data = f"{base_data} where {filters} limit {limit}; offset {offset};" 
+    else:
+        data = f"{base_data} limit {limit}; offset {offset};"
+
+
+    response = requests.post(endpoint, headers=headers, data=data)
     response_data = response.json()
+
 
     games_info = []
     for game in response_data:
-            game_info = {
-                "id": game.get("id"),
-                "name": game.get("name"),
-                "summary": game.get("summary"),
-                "aggregated_rating": game.get("aggregated_rating"),
-                "aggregated_rating_count": game.get("aggregated_rating_count"),           
-                "cover_url": game.get("cover", {}).get("url"),
-                "genres": [genre.get("name") for genre in game.get("genres", [])],
-                "platforms": [platform.get("name") for platform in game.get("platforms", [])],
-                "hypes": game.get("hypes")
-            }
-            games_info.append(game_info)
+        game_info = {
+            "id": game.get("id"),
+            "name": game.get("name"),
+            "summary": game.get("summary"),
+            "aggregated_rating": game.get("aggregated_rating"),
+            "aggregated_rating_count": game.get("aggregated_rating_count"),
+            "cover_url": game.get("cover", {}).get("url"),
+            "genres": [genre.get("name") for genre in game.get("genres", [])],
+            "platforms": [platform.get("name") for platform in game.get("platforms", [])],
+            "hypes": game.get("hypes")
+        }
+        games_info.append(game_info)
+
 
     return games_info
 

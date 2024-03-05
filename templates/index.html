@@ -2,25 +2,23 @@
 
 <h1 class="text-center">Most Hyped Games</h1>
 
-
-<!-- Will implement in future update
 <div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <select id="platform" class="form-select mb-3">
-                <option value="">Select Platform</option>
-            </select>
-        </div>
-        <div class="col-md-6">
-            <select id="genre" class="form-select mb-3">
-                <option value="">Select Genre</option>
-            </select>
-        </div>
-    </div>
-</div> -->
+    <form class="form-inline mb-3" id="filterForm">
+        <label for="platform">Platform:</label>
+        <select id="platform" class="form-select">
+            <option value="">All Platforms</option>
+        </select>
+
+        <label for="genre">Genre:</label>
+        <select id="genre" class="form-select">
+            <option value="">All Genres</option>
+        </select>
+        <button type="submit" id="submitBtn" class="btn btn-primary btn-block btn-lg">Filter</button>
+    </form>
+</div>
 
 <div class="container">
-    <div class="row">
+    <div class="row" id="gameList">
         {% for game in games %}
         <div class="col-md-3">
             <div class="card" style="width: 18rem">
@@ -45,12 +43,7 @@
                         game.aggregated_rating_count }} reviews) {% else %} <b>Critic Rating:</b> Not Yet Available {%
                         endif %}
                     </li>
-                    <li class="list-group-item">
-                        <b>GameSphere Rating:</b>
-                        {% for avg_rating in avg_ratings %} {% if avg_rating.game_id == game.id %} {{
-                        avg_rating.avg_rating | float | round(1) }} {% endif %} {% else %} Not Yet Available {% endfor
-                        %}
-                    </li>
+                    <li class="list-group-item"><b>GameSphere Rating:</b> {{game.avg_rating}}</li>
                 </ul>
                 <div class="card-body">
                     <a href="/games/{{ game.id }}" class="card-link">Details</a>

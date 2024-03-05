@@ -24,4 +24,4 @@ class GameSearchForm(FlaskForm):
 
 class CreateListForm(FlaskForm):
     name = StringField("List Name", validators=[DataRequired()])
-    game_select = SelectMultipleField("Game List", choices=[]) 
+    game_select = SelectMultipleField("Game List", choices=[], coerce=int)  

@@ -130,15 +130,24 @@ def display_games(page_num=1):
     page_num = request.args.get('page', 1, type=int)  # Get the 'page' parameter from the URL
     offset = (page_num - 1) * 20
 
-    games = get_game_info(limit=20, offset=offset)
+    platform_id = request.args.get('platform')
+    genre_id = request.args.get('genre')
+
+    games = get_game_info(limit=20, offset=offset, platform_id=platform_id, genre_id=genre_id)
     user = g.user if g.user else None
 
     # Calculate average ratings
     avg_ratings = db.session.query(Rating.game_id, func.avg(Rating.rating).label('avg_rating')).group_by(Rating.game_id).all()
 
- 
+    for game in games:
+        game_id = game['id']
+        try:
+            game['avg_rating'] = round(next(rating[1] for rating in avg_ratings if rating[0] == game_id), 2)
+        except StopIteration:
+            game['avg_rating'] = "Not yet available"
 
-    return render_template('index.html', games=games, page=page_num, user=user, form=form, avg_ratings=avg_ratings)
+    return render_template('index.html', games=games, page=page_num, user=user, form=form)
+
  
 
 @app.route('/users/profile/<int:user_id>')
@@ -149,10 +158,14 @@ def show_profile(user_id):
 @app.route('/games/<int:game_id>')
 def show_game_details(game_id):
     game = get_single_game_info(game_id) 
-    user = g.user if g.user else None
-    existing_rating = Rating.query.filter_by(user_id=user.id, game_id=game_id).first()
+    user = g.user
+    
+    existing_rating = None
+    if user:
+        existing_rating = Rating.query.filter_by(user_id=user.id, game_id=game_id).first()
 
     return render_template('game_detail.html', game=game, user=user, existing_rating=existing_rating)
+
 
 ##########################################################################################
 #Ratings
@@ -188,8 +201,6 @@ def rate_game(game_id):
 def create_list():
     """Show form if GET. User create list form"""
 
-    print("Reached create_list route")  # Temporary print statement to verify route is reached
-
     if not g.user:
         flash("You must be logged in to create a list.", 'danger')
         return redirect("/")
@@ -203,11 +214,7 @@ def create_list():
     form.game_select.choices = game_choices 
 
     if form.validate_on_submit():
-        print("Form validated successfully")  # Check if form validation is successful
-        print("Form data:", form.data)  # Print form data to check if it's being captured correctly
-        print("Name:", form.name.data)  # Print specific form field values
         games = request.form.getlist('game_select')  # Extract selected game IDs
-        print("Games:", games)
         
         if games:
             name = form.name.data
@@ -236,9 +243,64 @@ def display_list(list_id):
     avg_ratings = db.session.query(Rating.game_id, func.avg(Rating.rating).label('avg_rating')).group_by(Rating.game_id).all()
     game_data = [get_single_game_info(game_id) for game_id in list.games]
 
- 
 
     return render_template('list_detail.html', user=user, list=list, avg_ratings=avg_ratings, games=game_data)
+
+
+@app.route('/list/<int:list_id>/edit', methods=["GET", "POST"])
+def edit_list(list_id):
+    """Form to edit an existing list"""
+
+    if not g.user:
+        flash("You must be logged in to edit a list.", 'danger')
+        return redirect("/")
+
+    list = List.query.get_or_404(list_id)  # Retrieve the list object from the database
+    form = CreateListForm(obj=list)  # Set the form object using the list object
+
+    all_games = get_game_info(limit=500)  
+    game_choices = [(game['id'], game['name']) for game in all_games]
+    form.game_select.choices = game_choices 
+
+    # Convert game IDs to integers
+    list_games = [int(game_id) for game_id in list.games]
+
+    # Set the data for the game_select field in the form
+    form.game_select.data = list_games
+    form.name.data = list.title
+
+    if form.validate_on_submit():
+        games = request.form.getlist('game_select')  
+        
+        if games:
+            list.title = form.name.data  # Update the list object with new data from the form
+            list.games = games
+            db.session.commit()
+
+            flash("List updated successfully.", 'success')
+            return redirect(f"/users/profile/{g.user.id}")
+        else:
+            flash("No games selected for the list.", 'danger')
+            return redirect(f"/list/{list_id}/edit")
+
+    return render_template('edit_list.html', form=form, user=g.user, list=list)
+
+@app.route('/list/<int:list_id>/delete', methods=["POST"])
+def delete_list(list_id):
+    """Delete a list."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    list = List.query.get(list_id)
+    db.session.delete(list)
+    db.session.commit()
+    flash("List deleted successfully.", "success")
+    return redirect(f"/users/profile/{g.user.id}")
+
+
+
 
 ##########################################################################################
 #API endpoints
@@ -255,23 +317,37 @@ def get_genres():
 
 @app.route("/api/games")
 def get_games():
-    platform_id = request.args.get('platform')
-    genre_id = request.args.get('genre')
+    platform_id_str = request.args.get('platform')
+    genre_id_str = request.args.get('genre')
+    
+    if platform_id_str:
+        platform_id = int(platform_id_str)  # Convert to integer 
+    else:
+        platform_id = None  # Set to None if not provided
+    if genre_id_str:
+        genre_id = int(genre_id_str)  # Convert to integer 
+    else:
+        genre_id = None  # Set to None if not provided
 
- 
     # Build the query for IGDB based on platform_id and genre_id 
     filters = ""
-    if platform_id:
-        filters += f"platforms = ({platform_id}) & "
-    if genre_id:
-        filters += f"genres = ({genre_id}) & "
+    if platform_id and genre_id:
+        filters += f"platforms={platform_id} & genres={genre_id};"
+    elif platform_id:
+        filters += f"platforms={platform_id};"
+    elif genre_id:
+        filters += f"genres={genre_id};"
 
     # Call helper functions to fetch data
-    games_info = get_game_info(filters=filters)  
+    games_info = get_game_info(platform_id=platform_id, genre_id=genre_id, filters=filters)  
+
+    if not games_info: 
+      return jsonify({'error': 'No games found matching your filters'}), 404
 
     return jsonify(games_info)
 
-@app.route('/api/search-games')
+
+@app.route('/api/search')
 def search_games():
     query = request.args.get('query', '')  
     search_results = search_games(query)   

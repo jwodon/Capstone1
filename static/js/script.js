@@ -1,11 +1,10 @@
 $(document).ready(function () {
-    // 1. Fetch platforms and genres
+    // Fetch platforms and genres
     fetchPlatforms();
     fetchGenres();
-    fetchAndPopulateGames();
 
     const ratingSlider = $('#ratingSlider');
-    const ratingDisplay = $('#ratingDisplay'); // Add an element for display (see HTML snippet below)
+    const ratingDisplay = $('#ratingDisplay'); // Assuming you have an element with id "ratingDisplay" in your HTML
 
     ratingSlider.on('input', function () {
         ratingDisplay.text(ratingSlider.val());
@@ -22,7 +21,7 @@ $(document).ready(function () {
             });
     }
 
-    // Function to fetch genres (similar to fetchPlatforms)
+    // Function to fetch genres
     function fetchGenres() {
         fetch('/api/genres')
             .then((response) => response.json())
@@ -33,24 +32,80 @@ $(document).ready(function () {
             });
     }
 
-    // Function to fetch and populate the games dropdown
-    // function fetchAndPopulateGames() {
-    //     $('#game-select').prop('disabled', true).append(`<option value="" disabled selected>Loading games...</option>`);
+    // Function to fetch and populate games based on selected platform and genre
+    function fetchAndPopulateGames(filters) {
+        $('#gameList').html('<p>Loading games...</p>');
 
-    //     fetch('/api/games/all')
-    //         .then((response) => response.json())
-    //         .then((games) => {
-    //             // Clear placeholder option
-    //             $('#game-select option[value=""][disabled]').remove();
+        let apiUrl = '/api/games';
+        if (filters) {
+            apiUrl += `?${filters}`;
+        }
 
-    //             // Populate the dropdown with game options
-    //             games.forEach((game) => {
-    //                 $('#game-select').append(`<option value="${game.id}">${game.name}</option>`);
-    //             });
-    //         })
-    //         .finally(() => {
-    //             // Re-enable the dropdown after loading completes
-    //             $('#game-select').prop('disabled', false);
-    //         });
-    // }
+        fetch(apiUrl)
+            .then((response) => response.json())
+            .then((games) => {
+                $('#gameList').empty(); // Clear the existing content
+                if (games.length === 0) {
+                    // Handle no results
+                    $('#gameList').html('<p>No games found matching your filters.</p>');
+                    return;
+                }
+                games.forEach((game) => {
+                    // Create HTML for game card
+                    const cardHtml = `
+                    <div class="col-md-3">
+                    <div class="card" style="width: 18rem;">
+                      <img src="${game.cover_url || '/static/images/alt_cover_img.jpg'}" class="card-img-top" alt="${
+                        game.name
+                    }">
+                      <div class="card-body">
+                        <h5 class="card-title">${game.name}</h5>
+                      </div>
+                      <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><b>Genres:</b> ${game.genres.join(', ')}</li>
+                        <li class="list-group-item"><b>Platforms:</b> ${game.platforms.join(', ')}</li>
+                        <li class="list-group-item">
+                          <b>Critic Rating:</b> ${
+                              game.aggregated_rating ? game.aggregated_rating.toFixed(1) : 'Not Yet Available'
+                          } (${game.aggregated_rating_count || 0} reviews)
+                        </li>
+                        <li class="list-group-item"><b>Community Rating:</b> ${
+                            game.avg_rating || 'Not Yet Available'
+                        }</li>
+                      </ul>
+                      <div class="card-body">
+                        <a href="/games/${game.id}" class="card-link">Details</a>
+                      </div>
+                    </div>
+                  </div>
+                `;
+                    $('#gameList').append(cardHtml);
+                });
+            })
+            .catch((error) => {
+                console.error('Error fetching games:', error);
+                $('#gameList').html('<p class="error-message">Error fetching games. Please try again.</p>');
+            });
+    }
+
+    // Event listeners for filters
+    $('#filterForm').on('submit', function (event) {
+        event.preventDefault();
+
+        const platformId = $('#platform').val();
+        const genreId = $('#genre').val();
+
+        let queryString = '';
+        if (platformId) {
+            queryString += `platform=${platformId}`;
+        }
+        if (genreId) {
+            if (queryString) {
+                queryString += '&';
+            }
+            queryString += `genre=${genreId}`;
+        }
+
+        fetchAndPopulateGames(queryString);
+    });
 });
