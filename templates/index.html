@@ -21,31 +21,32 @@
     <div class="row" id="gameList">
         {% for game in games %}
         <div class="col-md-3">
-            <div class="card" style="width: 18rem">
+            <div class="card h-100" style="width: 18rem">
                 <img
                     src="{{ game.cover_url or url_for('static', filename='images/alt_cover_img.jpg') }}"
                     class="card-img-top"
                     alt="Placeholder Image" />
-                <div class="card-body">
+                <div class="card-body d-flex flex-column">
                     <h5 class="card-title">{{game.name}}</h5>
+                    <ul class="list-group list-group-flush flex-grow-1">
+                        <li class="list-group-item">
+                            <b>Genre:</b> {% for genre in game.genres %} {{genre}} {{ ',' if not loop.last}} {% endfor
+                            %}
+                        </li>
+                        <li class="list-group-item">
+                            <b>Platform:</b>{% for platform in game.platforms %} {{platform}} {{ ', ' if not loop.last}}
+                            {% endfor %}
+                        </li>
+                        <li class="list-group-item">
+                            {% if game.aggregated_rating %}
+                            <b>Critic Rating:</b> {{ game.aggregated_rating | float | round }} ({{
+                            game.aggregated_rating_count }} reviews) {% else %} <b>Critic Rating:</b> Not Yet Available
+                            {% endif %}
+                        </li>
+                        <li class="list-group-item"><b>GameSphere Rating:</b> {{game.avg_rating}}</li>
+                    </ul>
                 </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <b>Genre:</b> {% for genre in game.genres %} {{genre}} {{ ',' if not loop.last}} {% endfor %}
-                    </li>
-                    <li class="list-group-item">
-                        <b>Platform:</b>{% for platform in game.platforms %} {{platform}} {{ ', ' if not loop.last}} {%
-                        endfor %}
-                    </li>
-                    <li class="list-group-item">
-                        {% if game.aggregated_rating %}
-                        <b>Critic Rating:</b> {{ game.aggregated_rating | float | round }} ({{
-                        game.aggregated_rating_count }} reviews) {% else %} <b>Critic Rating:</b> Not Yet Available {%
-                        endif %}
-                    </li>
-                    <li class="list-group-item"><b>GameSphere Rating:</b> {{game.avg_rating}}</li>
-                </ul>
-                <div class="card-body">
+                <div class="card-footer">
                     <a href="/games/{{ game.id }}" class="card-link">Details</a>
                 </div>
             </div>

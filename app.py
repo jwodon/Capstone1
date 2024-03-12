@@ -1,7 +1,7 @@
 import os
 import urllib.parse
 
-from flask import Flask, render_template, request, flash, redirect, session, g, jsonify, url_for
+from flask import Flask, render_template, request, flash, redirect, session, g, jsonify, url_for, abort
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from api_utils import get_game_info, get_genres_info, get_platforms_info, get_single_game_info
@@ -238,6 +238,10 @@ def display_list(list_id):
 
     list = List.query.get(list_id)
     user = g.user if g.user else None
+
+    # If the list does not exist, return a 404 Not Found error
+    if list is None:
+        abort(404)
 
     # Calculate average ratings
     avg_ratings = db.session.query(Rating.game_id, func.avg(Rating.rating).label('avg_rating')).group_by(Rating.game_id).all()

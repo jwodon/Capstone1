@@ -4,10 +4,10 @@ import time
 import json
 from config import TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET
 
+
 client_id = TWITCH_CLIENT_ID
 client_secret = TWITCH_CLIENT_SECRET
 base_url = 'https://api.igdb.com/v4'
-
 
 def get_twitch_access_token():
     resp = requests.post("https://id.twitch.tv/oauth2/token",

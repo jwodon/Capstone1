@@ -1,20 +1,149 @@
-.card-img-top {
-    object-fit: contain; /* Try 'contain' instead of 'cover' */
+/* Custom CSS */
+
+/* Body Styles */
+body {
+    font-family: 'Open Sans', sans-serif;
+    color: #fff; /* Text color */
+    background-color: #000; /* Background color */
 }
 
+/* Navigation Bar Styles */
+.navbar {
+    padding: 20px 0;
+}
+
+.navbar-brand {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.navbar-nav .nav-link {
+    font-size: 18px;
+    margin-right: 20px;
+}
+
+/* Flash Messages Styles */
+.alert {
+    border-radius: 0;
+}
+
+/* Container Styles */
+.container {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+/* Button Styles */
+.btn-primary {
+    background-color: #00ffff; /* Neon teal */
+    border-color: #00ffff;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #00cccc; /* Darker neon teal */
+}
+
+/* Form Styles */
+.form-control {
+    background-color: rgba(255, 255, 255, 0.1); /* Transparent background with neon border */
+    border-color: #00ffff; /* Neon teal border */
+    color: #fff; /* Text color */
+}
+
+/* Input Focus Styles */
+.form-control:focus {
+    border-color: #00cccc; /* Darker neon teal border on focus */
+    box-shadow: 0 0 0 0.2rem rgba(0, 255, 255, 0.5); /* Neon teal glow on focus */
+}
+
+/* Text Styles */
+h1,
+h2,
+h3 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+}
+
+/* Link Styles */
+a {
+    color: #00ffff; /* Neon teal link color */
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #00cccc; /* Darker neon teal on hover */
+}
+
+/* Card Styles */
+.card {
+    background-color: rgba(0, 255, 255, 0.1); /* Transparent background with neon teal border */
+    border-color: #00ffff; /* Neon teal border */
+    color: #fff; /* Text color */
+}
+
+/* Card Header Styles */
+.card-header {
+    background-color: rgba(0, 255, 255, 0.2); /* Slightly transparent background with neon teal border */
+    border-color: #00ffff; /* Neon teal border */
+    color: #fff; /* Text color */
+}
+
+/* Card Body Styles */
+.card-body {
+    background-color: rgba(0, 255, 255, 0.1); /* Transparent background with neon teal border */
+    flex-grow: 1; /* Allow body to grow to fill remaining space */
+    overflow: hidden; /* Hide overflow content */
+}
+
+/* Title Styles */
+.card-title {
+    margin-bottom: 15px; /* Space between title and other fields */
+}
+
+/* Details Button Styles */
+.details-btn {
+    margin-top: auto; /* Push button to bottom */
+}
+
+/* List Group Styles */
+.list-group {
+    background-color: rgba(0, 255, 255, 0.1); /* Transparent background with neon teal border */
+    border-color: #00ffff; /* Neon teal border */
+    color: #fff; /* Text color */
+    max-height: 200px; /* Set maximum height for list-group */
+    overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
+}
+
+/* List Group Item Styles */
+.list-group-item {
+    background-color: rgba(0, 255, 255, 0); /* Transparent background */
+    border: none; /* Remove borders */
+    color: #fff; /* Text color */
+}
+
+/* List Group Item Text Styles */
+.list-group-item b {
+    color: #00ffff; /* Neon teal color for labels */
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #00cccc; /* Color of the scrollbar thumb */
+    border-radius: 4px; /* Border radius of the thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #009999; /* Color of the thumb on hover */
+}
+
+/* Margin between Cards */
 .col-md-3 {
-    margin-bottom: 20px; /* Add spacing between cards vertically */
-}
-
-#submitBtn {
-    cursor: pointer;
-}
-
-button:not(:disabled), 
-[type=button]:not(:disabled), 
-[type=reset]:not(:disabled), 
-[type=submit]:not(:disabled),
-.btn:not(:disabled), /* Bootstrap buttons */
-.btn-primary:not(:disabled) /* Even more specific for Bootstrap primary buttons */ {
-    cursor: pointer !important;
+    margin-bottom: 20px; /* Space between cards */
 }
