@@ -21,9 +21,9 @@ GameFinder is a platform where users can discover and explore various video game
 -   Create a PostgreSQL database named `capstone1`.
 -   Update the `SQLALCHEMY_DATABASE_URI` in `app.py` if necessary.
 
-1. **Run the Flask app:**
+5. **Run the Flask app:**
 
-2. **Access the application:**
+6. **Access the application:**
    Open a web browser and go to [http://localhost:5000](http://localhost:5000) to access the GameFinder application.
 
 ## Features
